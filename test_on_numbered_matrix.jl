@@ -22,7 +22,7 @@ function plot_and_save_bettis(eirene_results, plot_title, data_size; do_save=fal
      cur_colors = get_color_palette(:auto, plot_color(:white), 17)
 
      final_title = "Eirene betti curves, "*plot_title*" data, size "*data_size
-     p1 = plot(betti_0[:,1], betti_0[:,2], label="\\beta_0", title=final_title);
+     p1 = plot(betti_0[:,1], betti_0[:,2], label="\\beta_0", lc=cur_colors[7], title=final_title);
      plot!(betti_1[:,1], betti_1[:,2], label="\\beta_1", lc=cur_colors[5]);
      plot!(betti_2[:,1], betti_2[:,2], label="\\beta_2", lc=[:red]);
      plot!(betti_3[:,1], betti_3[:,2], label="\\beta_3", lc=cur_colors[1]);
