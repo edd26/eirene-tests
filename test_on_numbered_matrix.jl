@@ -33,7 +33,7 @@ function plot_and_save_bettis(eirene_results, plot_title, data_size; do_save=fal
 
      if do_save
          cd(save_path)
-         savefig(plot_ref, "betti_curves_"*plot_title*".png")
+         savefig(plot_ref, "betti_curves_"*plot_title*data_size*".png")
      end
 
  end
@@ -43,7 +43,7 @@ eirene_model = "vr";
 eirene_maxdim = 3;
 
 n_numbered_matrix="numbered_matrix";
- data_size = "70"
+ data_size = "10"
 
 data_path = "./data/"
  suffix = "_size"
