@@ -12,12 +12,20 @@ using Plots
  Plot Betti curves from 0 up to 3 using results from Eirene library and returns
  handler for figure. Optionally, save the figure
  """
-function plot_and_save_bettis(eirene_results, plot_title, data_size; do_save=false,
-                     save_path = "/home/ed19aaf/Programming/Julia/eirene-tests/results")
+function plot_and_save_bettis(eirene_results, plot_title, data_size;
+                                do_save=false, do_normalise=true,
+             save_path = "/home/ed19aaf/Programming/Julia/eirene-tests/results")
      betti_0 = betticurve(eirene_results, dim=0)
      betti_1 = betticurve(eirene_results, dim=1)
      betti_2 = betticurve(eirene_results, dim=2)
      betti_3 = betticurve(eirene_results, dim=3)
+
+     if do_normalise
+             betti_0[:,1] /= findmax(betti_0[:,1])[1]
+             betti_1[:,1] /= findmax(betti_1[:,1])[1]
+             betti_2[:,1] /= findmax(betti_2[:,1])[1]
+             betti_3[:,1] /= findmax(betti_3[:,1])[1]
+     end
 
      cur_colors = get_color_palette(:auto, plot_color(:white), 17)
 
@@ -56,6 +64,5 @@ ending = 20
 
 res_eirene_numbered_matrix = eirene(numbered_matrix,maxdim=eirene_maxdim,
                                                             model=eirene_model)
-
 
 plot_and_save_bettis(res_eirene_numbered_matrix, n_numbered_matrix, data_size, do_save=true)
