@@ -14,28 +14,46 @@ using Plots
  """
 function plot_and_save_bettis(eirene_results, plot_title,
                                 data_size, results_path;
-                                do_save=false, do_normalise=true)
+                                do_save=false, do_normalise=false, max_dim=3)
 
-     betti_0 = betticurve(eirene_results, dim=0)
-     betti_1 = betticurve(eirene_results, dim=1)
-     betti_2 = betticurve(eirene_results, dim=2)
-     betti_3 = betticurve(eirene_results, dim=3)
-
-     if do_normalise
-             betti_0[:,1] /= findmax(betti_0[:,1])[1]
-             betti_1[:,1] /= findmax(betti_1[:,1])[1]
-             betti_2[:,1] /= findmax(betti_2[:,1])[1]
-             betti_3[:,1] /= findmax(betti_3[:,1])[1]
+     bettis  = Matrix{Float64}[]
+     for d =1:(max_dim+1)
+         result = betticurve(eirene_results, dim=d-1)
+         push!(bettis, result)
+         if do_normalise && !isempty(bettis[d])
+             bettis[d][:,1] /= findmax(bettis[d][:,1])[1]
+         end
      end
 
+
+     # betti_1 = betticurve(eirene_results, dim=1)
+     # bettis[0] = betti_1
+     # betti_2 = betticurve(eirene_results, dim=2)
+     # bettis[0] = betti_2
+     # betti_3 = betticurve(eirene_results, dim=3)
+     # bettis[0] = betti_3
+
+     # if do_normalise
+     #         betti_0[:,1] /= findmax(betti_0[:,1])[1]
+     #         betti_1[:,1] /= findmax(betti_1[:,1])[1]
+     #         betti_2[:,1] /= findmax(betti_2[:,1])[1]
+     #         if !isempty(betti_3)
+     #             (betti_3[:,1] /= findmax(betti_3[:,1])[1])
+     #         end
+     # end
+
      cur_colors = get_color_palette(:auto, plot_color(:white), 17)
+     colors_set =  [cur_colors[7], cur_colors[5], [:red], cur_colors[1], cur_colors]
 
      final_title = "Eirene betti curves, "*plot_title*" data, size "*data_size
-     p1 = plot(betti_0[:,1], betti_0[:,2], label="\\beta_0", lc=cur_colors[7],
-                                                        title=final_title);
-     plot!(betti_1[:,1], betti_1[:,2], label="\\beta_1", lc=cur_colors[5]);
-     plot!(betti_2[:,1], betti_2[:,2], label="\\beta_2", lc=[:red]);
-     plot!(betti_3[:,1], betti_3[:,2], label="\\beta_3", lc=cur_colors[1]);
+     # p1 = plot(bettis[0][:,1], bettis[0][:,2], label="\\beta_0", lc=colors_set[p],
+     #                                                    title=final_title);
+    p1 = plot(title=final_title);
+    for p = 1:(max_dim+1)
+        plot!(bettis[p][:,1], bettis[p][:,2], label="\\beta_"*string(p-1), lc=colors_set[p]);
+    end
+     # plot!(betti_2[:,1], betti_2[:,2], label="\\beta_2", lc=[:red]);
+     # plot!(betti_3[:,1], betti_3[:,2], label="\\beta_3", lc=cur_colors[1]);
 
 
      plot_ref = plot(p1)
@@ -57,7 +75,7 @@ eirene_maxdim = 3;
 n_numbered_matrix="numbered_matrix";
  data_size = ["4", "10", "70"]
  result_path = "./results/"
- figure_path = "figures/"
+ figure_path = "fig/"
 
 data_path = "./data/"
  suffix = "_size"
@@ -75,3 +93,5 @@ for k=1:length(data_size)
         plot_and_save_bettis(res_eirene_numbered_matrix, n_numbered_matrix,
                          data_size[k], result_path*figure_path, do_save=true)
 end
+
+eirene_results = res_eirene_numbered_matrix
