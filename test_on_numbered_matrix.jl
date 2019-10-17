@@ -9,12 +9,13 @@ using Plots
 
 
  """
- Plot Betti curves from 0 up to 3 using results from Eirene library and returns
- handler for figure. Optionally, save the figure
+ Plot Betti curves from 0 up to max_dim using results from Eirene library and
+ returns handler for figure. Optionally, saves the figure or normalise the
+     horizontal axis to maximal value
  """
 function plot_and_save_bettis(eirene_results, plot_title,
                                 data_size, results_path;
-                                do_save=false, do_normalise=false, max_dim=3)
+                                do_save=true, do_normalise=true, max_dim=3)
 
      bettis  = Matrix{Float64}[]
      for d =1:(max_dim+1)
@@ -25,38 +26,15 @@ function plot_and_save_bettis(eirene_results, plot_title,
          end
      end
 
-
-     # betti_1 = betticurve(eirene_results, dim=1)
-     # bettis[0] = betti_1
-     # betti_2 = betticurve(eirene_results, dim=2)
-     # bettis[0] = betti_2
-     # betti_3 = betticurve(eirene_results, dim=3)
-     # bettis[0] = betti_3
-
-     # if do_normalise
-     #         betti_0[:,1] /= findmax(betti_0[:,1])[1]
-     #         betti_1[:,1] /= findmax(betti_1[:,1])[1]
-     #         betti_2[:,1] /= findmax(betti_2[:,1])[1]
-     #         if !isempty(betti_3)
-     #             (betti_3[:,1] /= findmax(betti_3[:,1])[1])
-     #         end
-     # end
-
      cur_colors = get_color_palette(:auto, plot_color(:white), 17)
      colors_set =  [cur_colors[7], cur_colors[5], [:red], cur_colors[1], cur_colors]
 
      final_title = "Eirene betti curves, "*plot_title*" data, size "*data_size
-     # p1 = plot(bettis[0][:,1], bettis[0][:,2], label="\\beta_0", lc=colors_set[p],
-     #                                                    title=final_title);
-    p1 = plot(title=final_title);
+
+    plot_ref = plot(title=final_title);
     for p = 1:(max_dim+1)
         plot!(bettis[p][:,1], bettis[p][:,2], label="\\beta_"*string(p-1), lc=colors_set[p]);
     end
-     # plot!(betti_2[:,1], betti_2[:,2], label="\\beta_2", lc=[:red]);
-     # plot!(betti_3[:,1], betti_3[:,2], label="\\beta_3", lc=cur_colors[1]);
-
-
-     plot_ref = plot(p1)
      ylabel!("Number of cycles")
 
      if do_save
@@ -65,7 +43,7 @@ function plot_and_save_bettis(eirene_results, plot_title,
          savefig(plot_ref, "betti_curves_"*plot_title*data_size*".png")
          cd(current_path)
      end
-
+     return plot_ref
  end
 
 # Generated data
@@ -93,5 +71,3 @@ for k=1:length(data_size)
         plot_and_save_bettis(res_eirene_numbered_matrix, n_numbered_matrix,
                          data_size[k], result_path*figure_path, do_save=true)
 end
-
-eirene_results = res_eirene_numbered_matrix
