@@ -60,7 +60,6 @@ data_path = "./data/"
 # euc_dist_mat_sphr_1 = readdlm(data_path*prefix*n_sphr_1*suffix*""*file_format,  ',', Float64, '\n')
 numbered_matrix = readdlm(data_path*n_numbered_matrix*suffix*data_size*file_format,
                                                             ',', Float64, '\n')
-ending = 20
 
 res_eirene_numbered_matrix = eirene(numbered_matrix,maxdim=eirene_maxdim,
                                                             model=eirene_model)
