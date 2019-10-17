@@ -55,7 +55,7 @@ eirene_model = "vr";
 eirene_maxdim = 3;
 
 n_numbered_matrix="numbered_matrix";
- data_size = "10"
+ data_size = ["4", "10", "70"]
  result_path = "./results/"
  figure_path = "figures/"
 
@@ -64,11 +64,14 @@ data_path = "./data/"
  file_format = ".csv"
 
 # euc_dist_mat_sphr_1 = readdlm(data_path*prefix*n_sphr_1*suffix*""*file_format,  ',', Float64, '\n')
-numbered_matrix = readdlm(data_path*n_numbered_matrix*suffix*data_size*file_format,
+
+for k=1:length(data_size)
+        numbered_matrix = readdlm(data_path*n_numbered_matrix*suffix*data_size[k]*file_format,
                                                             ',', Float64, '\n')
 
-res_eirene_numbered_matrix = eirene(numbered_matrix,maxdim=eirene_maxdim,
-                                                            model=eirene_model)
+        res_eirene_numbered_matrix = eirene(numbered_matrix,
+                                maxdim=eirene_maxdim, model=eirene_model)
 
-plot_and_save_bettis(res_eirene_numbered_matrix, n_numbered_matrix, data_size,
-                                result_path*figire_path, do_save=true)
+        plot_and_save_bettis(res_eirene_numbered_matrix, n_numbered_matrix,
+                         data_size[k], result_path*figure_path, do_save=true)
+end
