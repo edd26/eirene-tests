@@ -1,0 +1,3 @@
+[submodule "julia-functions"]
+	path = julia-functions
+	url = https://github.com/edd26/julia-functions.git
