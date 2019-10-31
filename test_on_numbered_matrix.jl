@@ -6,7 +6,9 @@ using Plots
  using DelimitedFiles
  mat"addpath('/home/ed19aaf/Programming/MATLAB/clique-top')"
  cd("/home/ed19aaf/Programming/Julia/eirene-tests")
- include("/home/ed19aaf/Programming/Julia/my_packages/plot_bettis.jl")
+ include("julia-functions/MatrixProcessing.jl")
+ include("julia-functions/BettiCurves.jl")
+ include("julia-functions/DirOperations.jl")
 
 # ENV["JULIA_DEBUG"] = "all"
 # Generated data

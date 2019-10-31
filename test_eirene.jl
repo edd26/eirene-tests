@@ -6,32 +6,7 @@ using Plots
  using DelimitedFiles
  mat"addpath('/home/ed19aaf/Programming/MATLAB/clique-top')"
  cd("/home/ed19aaf/Programming/Julia/eirene-tests")
-
-
- """
- Plot Betti curves from 0 up to 3 using results from Eirene library and returns
- handler for figure. Optionally, save the figure
- """
-function plot_and_save_bettis(eirene_results, plot_title; do_save=false,
-                     save_path = "/home/ed19aaf/Programming/Julia/eirene-tests/results")
-     betti_0 = betticurve(eirene_results, dim=0)
-     betti_1 = betticurve(eirene_results, dim=1)
-     betti_2 = betticurve(eirene_results, dim=2)
-     betti_3 = betticurve(eirene_results, dim=3)
-
-     p1 = plot(betti_0[:,1], betti_0[:,2], label="beta_0", title=plot_title);
-     plot!(betti_1[:,1], betti_1[:,2], label="beta_1");
-     plot!(betti_2[:,1], betti_2[:,2], label="beta_2");
-     plot!(betti_3[:,1], betti_3[:,2], label="beta_3");
-
-     plot_ref = plot(p1)
-
-     if do_save
-         cd(save_path)
-         savefig(plot_ref, "betti_curves_"*plot_title*".png")
-     end
-
- end
+ include("julia-functions/BettiCurves.jl")
 
 # Generated data
 eirene_model = "vr";

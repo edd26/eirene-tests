@@ -1,6 +1,6 @@
 using Eirene
 using DelimitedFiles
- include("plot_bettis.jl")
+ include("julia-functions/BettiCurves.jl")
 
 
 dist_mat_ball = readdlm( "dist_mat_ball.csv",  ',', Float64, '\n') .+1
