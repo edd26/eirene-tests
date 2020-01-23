@@ -33,7 +33,7 @@ cd("../eirene-tests")
 
 # ==============================================
 # ============= matrix parameters ==============
-maxsim=10;
+maxsim=2;
 
 sample_space_dim = 3
 
@@ -44,14 +44,14 @@ num_of_bettis = length(collect(min_B_dim:max_B_dim))
 
 size_start = 10
 size_step = 10
-size_stop = 80
+size_stop = 50
 
 geom_mat_results = Any[]
 rand_mat_results = Any[]
 result_list = [geom_mat_results, rand_mat_results]
 
 
-repetitions = collect(size_start:size_step:size_stop)
+repetitions = size_start:size_step:size_stop
 for space_samples in repetitions
     @info "Generating data for: " space_samples
     # ==========================================
@@ -80,7 +80,7 @@ for space_samples in repetitions
         # Generate bettis
         many_bettis = Array[]
         for i=1:maxsim
-            @info "Computing Bettis for: " i 
+            @info "Computing Bettis for: " i
             push!(many_bettis,bettis_eirene(matrix_set[i], max_B_dim,
                                                             mindim=min_B_dim))
         end
@@ -95,8 +95,14 @@ for space_samples in repetitions
 
         # ===
         # Get the statistics
-        avg_cycles = mean([max_cycles[betti_dim, :] for betti_dim=1:max_B_dim])
-        std_cycles = std([max_cycles[betti_dim, :] for betti_dim=1:max_B_dim])
+        avg_cycles = zeros(1, length(min_B_dim:max_B_dim))
+        std_cycles = zeros(1, length(min_B_dim:max_B_dim))
+        k=1
+        for betti_dim=min_B_dim:max_B_dim
+            avg_cycles[k] = mean(max_cycles[:, betti_dim])
+            std_cycles[k] = std(max_cycles[:, betti_dim])
+            k+=1
+        end
 
         # ===
         # Put results into dictionary
@@ -162,19 +168,3 @@ plot_ref = plot(title="Average number of cycles for geometric matrix",
     end
     ylabel!("Number of cycles")
     xlabel!("Matrix size")
-# plot_title = ""
-#
-# figure_name = "betti_"*type_1*"_d$(d)_n$(space_samples)"
-# C_geom = eirene(ordered_mat_geom[data_used],maxdim=3,model="vr")
-# ref = plot_and_save_bettis(C_geom, plot_title, figure_path; file_name=figure_name,
-#                                 do_save=true, extend_title=false,
-#                                 do_normalise=false, max_dim=3,legend_on=false,
-#                                 min_dim=1)
-#
-#
-# figure_name = "betti_"*type_2*"_d$(d)_n$(space_samples)"
-# C_rand = eirene(ordered_mat_rand[data_used],maxdim=3,model="vr")
-# ref = plot_and_save_bettis(C_rand, plot_title, figure_path; file_name=figure_name,
-#                                 do_save=true, extend_title=false,
-#                                 do_normalise=false, max_dim=3,legend_on=false,
-#                                 min_dim=1)
