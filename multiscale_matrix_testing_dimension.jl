@@ -27,13 +27,13 @@ cd("../eirene-tests")
 
 # ==============================================
 # ============= matrix parameters ==============
-dims = collect(5:10:75)
-    repetitions = 2
+dims = collect(5:5:90)
+    repetitions = 20
     min_B_dim = 1
     max_B_dim = 3
-    size_start = 20
+    size_start = 5
     size_step = 5
-    size_stop = 30
+    size_stop = 100
 
 if loading
     dict = load("multiscale_matrix_testing_dimension.jld")

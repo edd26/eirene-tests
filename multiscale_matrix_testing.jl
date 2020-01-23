@@ -1,6 +1,6 @@
 
 using Plots
-using DelimitedFiles
+# using DelimitedFiles
 using JLD
 
 loading = false
@@ -28,23 +28,20 @@ cd("../eirene-tests")
 
 # ==============================================
 # ============= matrix parameters ==============
-dims = 50
+sample_space_dims = 50
+    maxsim = 2
     min_B_dim = 1
     max_B_dim = 3
-    size_start = 10
+    size_start = 5
     size_step = 5
-    size_stop = 50
+    size_stop = 100
 
 if loading
     load("multiscale_matrix_testing.jld")
 else
-    if do_rand
-        geom_mat_results, rand_mat_results = multiscale_matrix_testing(3,2,
-                            min_B_dim,max_B_dim,size_start,size_step,size_stop)
-    else
-        geom_mat_results = multiscale_matrix_testing(dims,2,1,3,10,10,50;
-                                                            do_random=do_rand)
-    end
+    geom_mat_results, rand_mat_results =
+                    multiscale_matrix_testing(sample_space_dims,maxsim,
+                        min_B_dim,max_B_dim,size_start,size_step,size_stop)
 end
 
 # ==============================================================================
