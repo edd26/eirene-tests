@@ -1,12 +1,10 @@
-# """
-# Script for testing the average number of cycles from geometric and random
-#     matrices.
-# """
+
 using Plots
 using DelimitedFiles
 using JLD
 
-
+loading = false
+do_rand = false
 #
 julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
@@ -28,106 +26,21 @@ end
 
 cd("../eirene-tests")
 
-# select plotting backend
-# plotlyjs()
-
 # ==============================================
 # ============= matrix parameters ==============
-maxsim=2;
-
-sample_space_dim = 3
-
-min_B_dim = 1
-max_B_dim = 3
-
-num_of_bettis = length(collect(min_B_dim:max_B_dim))
-
-size_start = 10
-size_step = 10
-size_stop = 50
-
-geom_mat_results = Any[]
-rand_mat_results = Any[]
-result_list = [geom_mat_results, rand_mat_results]
 
 
-repetitions = size_start:size_step:size_stop
-for space_samples in repetitions
-    @info "Generating data for: " space_samples
-    # ==========================================
-    # ============= Generate data ==============
-    # ===
-    # Generate random matrix
-    symm_mat_rand = [generate_random_matrix(space_samples) for i=1:maxsim]
-
-    # ===
-    # Generate geometric matrix
-    pts_rand = [generate_random_point_cloud(sample_space_dim,space_samples) for i=1:maxsim]
-
-    # compute distances
-    symm_mat_geom = [generate_geometric_matrix(pts_rand[i]') for i=1:maxsim]
-
-    # ==========================================
-    # ======= Generate ordering matrix =========
-    ordered_mat_geom = [get_ordered_matrix(symm_mat_geom[i]) for i=1:maxsim]
-    ordered_mat_rand = [get_ordered_matrix(symm_mat_rand[i]) for i=1:maxsim]
-
-    # ==============================================================================
-    # ========================= Do the Betti analysis ============================
-    for matrix_set in [ordered_mat_geom, ordered_mat_rand]
-        @debug("Betti analysis!")
-        # ===
-        # Generate bettis
-        many_bettis = Array[]
-        for i=1:maxsim
-            @info "Computing Bettis for: " i
-            push!(many_bettis,bettis_eirene(matrix_set[i], max_B_dim,
-                                                            mindim=min_B_dim))
-        end
-
-        # ===
-        # Get maximal number of cycles from each Betti from simulations
-        max_cycles = zeros(maxsim, max_B_dim)
-        for i=1:maxsim,  betti_dim = 1:max_B_dim
-            @debug("\tFindmax in bettis")
-            max_cycles[i, betti_dim] = findmax(many_bettis[i][:, betti_dim])[1]
-        end
-
-        # ===
-        # Get the statistics
-        avg_cycles = zeros(1, length(min_B_dim:max_B_dim))
-        std_cycles = zeros(1, length(min_B_dim:max_B_dim))
-        k=1
-        for betti_dim=min_B_dim:max_B_dim
-            avg_cycles[k] = mean(max_cycles[:, betti_dim])
-            std_cycles[k] = std(max_cycles[:, betti_dim])
-            k+=1
-        end
-
-        # ===
-        # Put results into dictionary
-        betti_statistics = Dict()
-        if matrix_set == ordered_mat_geom
-            @debug("Saving ordered")
-            betti_statistics["matrix_type"] = "ordered"
-            betti_statistics["space_dim"] = sample_space_dim
-            result_list = geom_mat_results
-        else
-            @debug("Saving radom")
-            betti_statistics["matrix_type"] = "random"
-            result_list = rand_mat_results
-        end
-        betti_statistics["space_samples"] = space_samples
-        betti_statistics["simualtions"] = maxsim
-        betti_statistics["min_betti_dim"] = min_B_dim
-        betti_statistics["max_betti_dim"] = max_B_dim
-        betti_statistics["avg_cycles"] = avg_cycles
-        betti_statistics["std_cycles"] = std_cycles
-
-        push!(result_list, betti_statistics)
-    end # matrix type loop
-    @debug("===============")
-end # matrix_size_loop
+if loading
+    load("multiscale_matrix_testing_rand_and_geom_10-5-80.jld")
+else
+    if do_rand
+        geom_mat_results, rand_mat_results = multiscale_matrix_testing(3,2,1,3,
+                                                                        10,5,50)
+    else
+        geom_mat_results = multiscale_matrix_testing([3 5 10],2,1,3,10,5,50;
+                                                            do_random=do_rand)
+    end
+end
 
 # ==============================================================================
 # ================= get the averages and stds ==========================
@@ -169,6 +82,7 @@ plot_ref = plot(title="Average number of cycles for geometric matrix",
     end
     ylabel!("Number of cycles")
     xlabel!("Matrix size")
+
 
 # ==============================================================================
 # ============================= Save dictionaries ==============================
