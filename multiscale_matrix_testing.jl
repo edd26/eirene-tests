@@ -1,10 +1,10 @@
-"""
-Script for testing the average number of cycles from geometric and random
-    matrices.
-"""
+# """
+# Script for testing the average number of cycles from geometric and random
+#     matrices.
+# """
 using Plots
 using DelimitedFiles
-
+using JLD
 
 
 #
@@ -160,6 +160,7 @@ plot_ref = plot(title="Average number of cycles for random matrix",
     ylabel!("Number of cycles")
     xlabel!("Matrix size")
 
+
 plot_ref = plot(title="Average number of cycles for geometric matrix",
                                                                 legend=:topleft);
     for betti = min_B_dim:max_B_dim
@@ -168,3 +169,9 @@ plot_ref = plot(title="Average number of cycles for geometric matrix",
     end
     ylabel!("Number of cycles")
     xlabel!("Matrix size")
+
+# ==============================================================================
+# ============================= Save dictionaries ==============================
+
+save("multiscale_matrix_testing.jld", "rand_mat_results", rand_mat_results,
+                                        "geom_mat_results", geom_mat_results)
