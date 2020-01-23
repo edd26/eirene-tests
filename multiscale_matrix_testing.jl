@@ -19,9 +19,11 @@ julia_func_path = "../julia-functions/"
 result_path = "results/"
 figure_path = result_path*"fig/"
 
-debug = true
+debug = false
 if debug
-   ENV["JULIA_DEBUG"] = "none"
+   ENV["JULIA_DEBUG"] = "all"
+else
+    ENV["JULIA_DEBUG"] = "none"
 end
 
 cd("../eirene-tests")
@@ -38,13 +40,20 @@ sample_space_dim = 3
 min_B_dim = 1
 max_B_dim = 3
 
+num_of_bettis = length(collect(min_B_dim:max_B_dim))
+
+size_start = 10
+size_step = 10
+size_stop = 80
+
 geom_mat_results = Any[]
 rand_mat_results = Any[]
 result_list = [geom_mat_results, rand_mat_results]
 
 
-for space_samples = 10:10:60
-    println("Generating data")
+repetitions = collect(size_start:size_step:size_stop)
+for space_samples in repetitions
+    @info "Generating data for: " space_samples
     # ==========================================
     # ============= Generate data ==============
     # ===
@@ -66,21 +75,21 @@ for space_samples = 10:10:60
     # ==============================================================================
     # ========================= Do the Betti analysis ============================
     for matrix_set in [ordered_mat_geom, ordered_mat_rand]
-        println("Betti analysis!")
+        @debug("Betti analysis!")
         # ===
         # Generate bettis
         many_bettis = Array[]
         for i=1:maxsim
-            println("\tComputing bettis")
+            @info "Computing Bettis for: " i 
             push!(many_bettis,bettis_eirene(matrix_set[i], max_B_dim,
-                                                                mindim=min_B_dim))
+                                                            mindim=min_B_dim))
         end
 
         # ===
         # Get maximal number of cycles from each Betti from simulations
         max_cycles = zeros(maxsim, max_B_dim)
         for i=1:maxsim,  betti_dim = 1:max_B_dim
-            println("\tFindmax in bettis")
+            @debug("\tFindmax in bettis")
             max_cycles[i, betti_dim] = findmax(many_bettis[i][:, betti_dim])[1]
         end
 
@@ -93,12 +102,12 @@ for space_samples = 10:10:60
         # Put results into dictionary
         betti_statistics = Dict()
         if matrix_set == ordered_mat_geom
-            println("Saving ordered")
+            @debug("Saving ordered")
             betti_statistics["matrix_type"] = "ordered"
             betti_statistics["space_dim"] = sample_space_dim
             result_list = geom_mat_results
         else
-            println("Saving radom")
+            @debug("Saving radom")
             betti_statistics["matrix_type"] = "random"
             result_list = rand_mat_results
         end
@@ -111,16 +120,48 @@ for space_samples = 10:10:60
 
         push!(result_list, betti_statistics)
     end # matrix type loop
-    println("===============")
+    @debug("===============")
 end # matrix_size_loop
 
+# ==============================================================================
+# ================= get the averages and stds ==========================
 
 
+betti_avgs_rand = zeros(length(repetitions), num_of_bettis)
+betti_stds_rand = zeros(length(repetitions), num_of_bettis)
+betti_avgs_geom = zeros(length(repetitions), num_of_bettis)
+betti_stds_geom = zeros(length(repetitions), num_of_bettis)
 
+for k in 1:length(repetitions)
+    betti_avgs_rand[k,:] = rand_mat_results[k]["avg_cycles"]
+    betti_stds_rand[k,:] = rand_mat_results[k]["std_cycles"]
+
+    betti_avgs_geom[k,:] = geom_mat_results[k]["avg_cycles"]
+    betti_stds_geom[k,:] = geom_mat_results[k]["std_cycles"]
+end
 
 
 # ==============================================================================
 # ================================ Plot results ================================
+
+
+plot_ref = plot(title="Average number of cycles for random matrix",
+                                                                legend=:topleft);
+    for betti = min_B_dim:max_B_dim
+        plot!(repetitions, betti_avgs_rand[:,betti], ribbon=betti_stds_rand[:,betti],
+                fillalpha=.3, labels="\\beta_$(betti)", linestyle=:solid, color=:auto)
+    end
+    ylabel!("Number of cycles")
+    xlabel!("Matrix size")
+
+plot_ref = plot(title="Average number of cycles for geometric matrix",
+                                                                legend=:topleft);
+    for betti = min_B_dim:max_B_dim
+        plot!(repetitions, betti_avgs_geom[:,betti], ribbon=betti_stds_geom[:,betti],
+                fillalpha=.3, labels="\\beta_$(betti)", linestyle=:solid, color=:auto)
+    end
+    ylabel!("Number of cycles")
+    xlabel!("Matrix size")
 # plot_title = ""
 #
 # figure_name = "betti_"*type_1*"_d$(d)_n$(space_samples)"
