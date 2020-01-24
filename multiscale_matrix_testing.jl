@@ -29,7 +29,7 @@ loading = false
 # ==============================================
 # ============= matrix parameters ==============
 sample_space_dims = 50
-    maxsim = 1
+    maxsim = 100
     min_B_dim = 1
     max_B_dim = 3
     size_start = 10
