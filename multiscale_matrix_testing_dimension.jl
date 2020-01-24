@@ -38,9 +38,9 @@ if loading
     dict = load("multiscale_matrix_testing_dimension.jld")
     geom_mat_results = dict["geom_mat_results"]
 else
-    geom_mat_results = multiscale_matrix_testing(dims,repetitions,min_B_dim,max_B_dim,
-                                                size_start,size_step,size_stop;
-                                                    control_saving=true)
+    geom_mat_results = multiscale_matrix_testing(dims,repetitions,min_B_dim,
+                                    max_B_dim, size_start,size_step,size_stop;
+                                        control_saving=true, perform_eavl=true)
 end
 
 # ==============================================================================

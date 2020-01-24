@@ -44,7 +44,7 @@ else
     geom_mat_results, rand_mat_results =
                     multiscale_matrix_testing(sample_space_dims,maxsim,
                         min_B_dim,max_B_dim,size_start,size_step,size_stop;
-                            control_saving=true)
+                            control_saving=true, perform_eavl=true)
 end
 
 # ==============================================================================
