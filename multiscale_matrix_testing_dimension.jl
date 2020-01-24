@@ -100,7 +100,7 @@ end
 # ==============================================================================
 # ============================= Save dictionaries ==============================
 
-save("multiscale_matrix_testing_dimension_night.jld", "geom_mat_results", geom_mat_results[:])
+save("multiscale_matrix_testing_dimension_2020-01-24.jld", "geom_mat_results", geom_mat_results[:])
 
 
 
