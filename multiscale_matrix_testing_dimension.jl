@@ -27,7 +27,7 @@ cd("../eirene-tests")
 # ==============================================
 # ============= matrix parameters ==============
 dims = collect(5:5:105)
-    repetitions = 20
+    repetitions = 100
     min_B_dim = 1
     max_B_dim = 3
     size_start = 10
