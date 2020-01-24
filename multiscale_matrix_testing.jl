@@ -3,10 +3,10 @@ using Plots
 using JLD
 
 loading = false
-do_rand = true
-plotting = false
-#
-julia_func_path = "../julia-functions/"
+ do_rand = true
+ plotting = false
+ #
+ julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
     include(julia_func_path*"MatrixToolbox.jl")
     include(julia_func_path*"MatrixProcessing.jl")
@@ -14,34 +14,37 @@ julia_func_path = "../julia-functions/"
     include(julia_func_path*"ImageProcessing.jl")
     include(julia_func_path*"PlottingWrappers.jl")
 
-result_path = "results/"
-figure_path = result_path*"fig/"
+ result_path = "results/"
+ figure_path = result_path*"fig/"
 
-debug = false
-if debug
+ debug = false
+ if debug
    ENV["JULIA_DEBUG"] = "all"
-else
+ else
     ENV["JULIA_DEBUG"] = "none"
-end
+ end
 
-cd("../eirene-tests")
+ cd("../eirene-tests")
 
 # ==============================================
 # ============= matrix parameters ==============
 sample_space_dims = 50
-    maxsim = 20
+    maxsim = 1
     min_B_dim = 1
     max_B_dim = 3
     size_start = 10
     size_step = 5
-    size_stop = 80
+    size_stop = 100
 
 if loading
-    load("multiscale_matrix_testing.jld")
+    dict = load("multiscale_matrix_testing_night.jld")
+    geom_mat_results = dict["geom_mat_results"]
+    rand_mat_results = dict["rand_mat_results"]
 else
     geom_mat_results, rand_mat_results =
                     multiscale_matrix_testing(sample_space_dims,maxsim,
-                        min_B_dim,max_B_dim,size_start,size_step,size_stop)
+                        min_B_dim,max_B_dim,size_start,size_step,size_stop;
+                            control_saving=true, perform_eavl=true)
 end
 
 # ==============================================================================
@@ -88,10 +91,24 @@ if plotting
         end
         ylabel!("Number of cycles")
         xlabel!("Matrix size")
+
+    plot_all = plot(title="Comparison of average number of cycles for random and geometric matrix",
+                                                                    legend=:topleft);
+        for betti = min_B_dim:max_B_dim
+            plot!(repetitions, betti_avgs_rand[:,betti], ribbon=betti_stds_rand[:,betti],
+                    fillalpha=.3, labels="\\beta_{$(betti)} random", linestyle=:solid, color=:auto)
+        end
+
+        for betti = min_B_dim:max_B_dim
+            plot!(repetitions, betti_avgs_geom[:,betti], ribbon=betti_stds_geom[:,betti],
+                    fillalpha=.3, labels="\\beta_{$(betti)} geometric", linestyle=:solid, color=:auto)
+        end
+        ylabel!("Number of cycles")
+        xlabel!("Matrix size")
 end
 
 # ==============================================================================
 # ============================= Save dictionaries ==============================
 
-save("multiscale_matrix_testing_night.jld", "rand_mat_results", rand_mat_results,
+save("multiscale_matrix_testing_2020-01-24.jld", "rand_mat_results", rand_mat_results,
                                         "geom_mat_results", geom_mat_results)
