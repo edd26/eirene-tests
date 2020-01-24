@@ -1,10 +1,10 @@
-
 using Plots
 # using DelimitedFiles
 using JLD
 
 loading = false
 do_rand = true
+plotting = false
 #
 julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
@@ -29,12 +29,12 @@ cd("../eirene-tests")
 # ==============================================
 # ============= matrix parameters ==============
 sample_space_dims = 50
-    maxsim = 2
+    maxsim = 20
     min_B_dim = 1
     max_B_dim = 3
-    size_start = 5
+    size_start = 10
     size_step = 5
-    size_stop = 100
+    size_stop = 80
 
 if loading
     load("multiscale_matrix_testing.jld")

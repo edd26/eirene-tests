@@ -1,10 +1,9 @@
 using Plots
-# using DelimitedFiles
 using JLD
 
 loading = false
 plotting = false
-#
+
 julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
     include(julia_func_path*"MatrixToolbox.jl")
@@ -27,13 +26,13 @@ cd("../eirene-tests")
 
 # ==============================================
 # ============= matrix parameters ==============
-dims = collect(5:5:90)
-    repetitions = 20
+dims = collect(5:5:105)
+    repetitions = 2
     min_B_dim = 1
     max_B_dim = 3
-    size_start = 5
+    size_start = 10
     size_step = 5
-    size_stop = 100
+    size_stop = 110
 
 if loading
     dict = load("multiscale_matrix_testing_dimension.jld")
