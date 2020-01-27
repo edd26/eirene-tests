@@ -35,7 +35,7 @@ dims = collect(5:5:105)
     size_stop = 110
 
 if loading
-    dict = load("multiscale_matrix_testing_dimension.jld")
+    dict = load("multiscale_matrix_testing_dimension_night.jld")
     geom_mat_results = dict["geom_mat_results"]
 else
     geom_mat_results = multiscale_matrix_testing(dims,repetitions,min_B_dim,
