@@ -17,7 +17,7 @@ figure_path = result_path*"fig/"
 
 debug = false
 if debug
-   ENV["JULIA_DEBUG"] = "all"
+   ENV["JULIA_DEBUG"] = "BettiCurves"
 else
     ENV["JULIA_DEBUG"] = "none"
 end
@@ -40,7 +40,8 @@ if loading
 else
     geom_mat_results = multiscale_matrix_testing(dims,repetitions,min_B_dim,
                                     max_B_dim, size_start,size_step,size_stop;
-                                        control_saving=true, perform_eavl=true)
+                                        control_saving=true,
+                                         perform_eavl=true)
 end
 
 # ==============================================================================
@@ -81,7 +82,8 @@ if plotting
 
     betti=1
      plot(repetitions,dims,get_surface_val,st = [:wireframe, :surface],
-                                            camera=(-40,20), color=:lightrainbow)
+                                            camera=(-40,20),
+                                             color=:lightrainbow)
         xlabel!("Matrix size")
         ylabel!("Sampling space dimension")
 
@@ -93,7 +95,8 @@ if plotting
 
     betti=3
      plot!(repetitions,dims,get_surface_val, st = [:wireframe, :surface],
-                                                    camera=(-40,20), color=:darkrainbow)
+                                                    camera=(-40,20),
+                                                     color=:darkrainbow)
         xlabel!("Matrix size")
         ylabel!("Sampling space dimension")
 end
@@ -101,7 +104,8 @@ end
 # ==============================================================================
 # ============================= Save dictionaries ==============================
 
-save("multiscale_matrix_testing_dimension_2020-01-24.jld", "geom_mat_results", geom_mat_results[:])
+save("multiscale_matrix_testing_dimension_2020-01-24.jld", "geom_mat_results",
+                                                        geom_mat_results[:])
 
 
 
