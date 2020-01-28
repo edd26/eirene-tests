@@ -2,9 +2,9 @@ using Plots
 # using DelimitedFiles
 using JLD
 
-loading = false
+loading = true
  do_rand = true
- plotting = false
+ plotting = true
  #
  julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
@@ -37,7 +37,7 @@ sample_space_dims = 50
     size_stop = 100
 
 if loading
-    dict = load("multiscale_matrix_testing_night.jld")
+    dict = load("multiscale_matrix_testing_2020-01-27.jld")
     geom_mat_results = dict["geom_mat_results"]
     rand_mat_results = dict["rand_mat_results"]
 else
@@ -74,13 +74,27 @@ if plotting
 
 
     plot_ref = plot(title="Average number of cycles for random matrix",
-                                                                    legend=:topleft);
+                                                                    legend=:left);
         for betti = min_B_dim:max_B_dim
             plot!(repetitions, betti_avgs_rand[:,betti], ribbon=betti_stds_rand[:,betti],
                     fillalpha=.3, labels="\\beta_$(betti)", linestyle=:solid, color=:auto)
         end
         ylabel!("Number of cycles")
         xlabel!("Matrix size")
+
+        plot!(inset = (1, bbox(0.05,0.05,0.5,0.25,:top,:left)), subplot=1)
+        st_plt = 3
+        end_plt = Int(floor((length(repetitions))/2))+2
+        for bet = min_B_dim:max_B_dim
+            plot!(repetitions[st_plt:end_plt,1], betti_avgs_rand[st_plt:end_plt,bet],
+                    ribbon=betti_stds_rand[st_plt:end_plt,bet], fillalpha=.3,
+                     legend=false, subplot=2, tick_direction=:in)
+        end
+
+
+
+        # histogram!(randn(1000),
+        #             inset = (1, bbox(0.05,0.05,0.5,0.25,:bottom,:right)), ticks=nothing, subplot=3, bg_inside=nothing)
 
 
     plot_ref = plot(title="Average number of cycles for geometric matrix",
@@ -107,8 +121,8 @@ if plotting
         xlabel!("Matrix size")
 end
 
-# ==============================================================================
-# ============================= Save dictionaries ==============================
-
-save("multiscale_matrix_testing_2020-01-24.jld", "rand_mat_results", rand_mat_results,
-                                        "geom_mat_results", geom_mat_results)
+# # ==============================================================================
+# # ============================= Save dictionaries ==============================
+#
+# save("multiscale_matrix_testing_2020-01-24.jld", "rand_mat_results", rand_mat_results,
+#                                         "geom_mat_results", geom_mat_results)
