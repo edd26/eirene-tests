@@ -74,13 +74,22 @@ if plotting
 
 
     plot_ref = plot(title="Average number of cycles for random matrix",
-                                                                    legend=:topleft);
+                                                                    legend=:left);
         for betti = min_B_dim:max_B_dim
             plot!(repetitions, betti_avgs_rand[:,betti], ribbon=betti_stds_rand[:,betti],
                     fillalpha=.3, labels="\\beta_$(betti)", linestyle=:solid, color=:auto)
         end
         ylabel!("Number of cycles")
         xlabel!("Matrix size")
+
+        plot!(inset = (1, bbox(0.05,0.05,0.5,0.25,:top,:left)), subplot=1)
+        st_plt = 3
+        end_plt = Int(floor((length(repetitions))/2))+2
+        for bet = min_B_dim:max_B_dim
+            plot!(repetitions[st_plt:end_plt,1], betti_avgs_rand[st_plt:end_plt,bet],
+                    ribbon=betti_stds_rand[st_plt:end_plt,bet], fillalpha=.3,
+                     legend=false, subplot=2, tick_direction=:in)
+        end
 
 
     plot_ref = plot(title="Average number of cycles for geometric matrix",
