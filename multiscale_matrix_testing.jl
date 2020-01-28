@@ -73,7 +73,7 @@ if plotting
 # ================================ Plot results ================================
 
 
-    plot_ref = plot(title="Average number of cycles for random matrix",
+    plot_rand = plot(title="Average number of cycles for random matrix",
                                                                     legend=:left);
         for betti = min_B_dim:max_B_dim
             plot!(repetitions, betti_avgs_rand[:,betti], ribbon=betti_stds_rand[:,betti],
@@ -97,7 +97,7 @@ if plotting
         #             inset = (1, bbox(0.05,0.05,0.5,0.25,:bottom,:right)), ticks=nothing, subplot=3, bg_inside=nothing)
 
 
-    plot_ref = plot(title="Average number of cycles for geometric matrix",
+    plot_geom = plot(title="Average number of cycles for geometric matrix",
                                                                     legend=:topleft);
         for betti = min_B_dim:max_B_dim
             plot!(repetitions, betti_avgs_geom[:,betti], ribbon=betti_stds_geom[:,betti],
@@ -119,6 +119,10 @@ if plotting
         end
         ylabel!("Number of cycles")
         xlabel!("Matrix size")
+
+    display(plot_rand)
+    display(plot_geom)
+    display(plot_all)
 end
 
 # # ==============================================================================
