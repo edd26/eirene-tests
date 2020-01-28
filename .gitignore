@@ -2,3 +2,5 @@
 *.jl.*.cov
 *.jl.mem
 deps/deps.jl
+results/dim_comparison
+results/rand_geom_dim50
