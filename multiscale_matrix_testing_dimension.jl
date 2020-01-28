@@ -1,28 +1,28 @@
 using Plots
 using JLD
 
-loading = false
-plotting = false
+loading = true
+ plotting = true
 
-julia_func_path = "../julia-functions/"
-    include(julia_func_path*"GeometricSampling.jl");
-    include(julia_func_path*"MatrixToolbox.jl")
-    include(julia_func_path*"MatrixProcessing.jl")
-    include(julia_func_path*"BettiCurves.jl")
-    include(julia_func_path*"ImageProcessing.jl")
-    include(julia_func_path*"PlottingWrappers.jl")
+    julia_func_path = "../julia-functions/"
+        include(julia_func_path*"GeometricSampling.jl");
+        include(julia_func_path*"MatrixToolbox.jl")
+        include(julia_func_path*"MatrixProcessing.jl")
+        include(julia_func_path*"BettiCurves.jl")
+        include(julia_func_path*"ImageProcessing.jl")
+        include(julia_func_path*"PlottingWrappers.jl")
 
-result_path = "results/2020-01-27/"
-figure_path = result_path*"fig/"
+    result_path = "results/2020-01-27/"
+    figure_path = result_path*"fig/"
 
-debug = false
-if debug
-   ENV["JULIA_DEBUG"] = "BettiCurves"
-else
-    ENV["JULIA_DEBUG"] = "none"
-end
+    debug = false
+    if debug
+       ENV["JULIA_DEBUG"] = "BettiCurves"
+    else
+        ENV["JULIA_DEBUG"] = "none"
+    end
 
-cd("../eirene-tests")
+    cd("../eirene-tests")
 
 # ==============================================
 # ============= matrix parameters ==============
@@ -35,7 +35,7 @@ dims = collect(5:5:105)
     size_stop = 110
 
 if loading
-    dict = load(result_path*"multiscale_matrix_testing_2020-01-27.jld")
+    dict = load(result_path*"multiscale_matrix_testing_dimension_2020-01-27.jld")
     geom_mat_results = dict["geom_mat_results"]
 else
     geom_mat_results = multiscale_matrix_testing(dims,repetitions,min_B_dim,
@@ -104,10 +104,10 @@ end
 # ==============================================================================
 # ============================= Save dictionaries ==============================
 
-save("multiscale_matrix_testing_dimension_2020-01-24.jld", "geom_mat_results",
-                                                        geom_mat_results[:])
-
-
+# save("multiscale_matrix_testing_dimension_2020-01-24.jld", "geom_mat_results",
+#                                                         geom_mat_results[:])
+#
+#
 
 
 # === ==== === ==
