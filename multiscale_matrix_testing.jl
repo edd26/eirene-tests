@@ -14,7 +14,7 @@ loading = true
     include(julia_func_path*"ImageProcessing.jl")
     include(julia_func_path*"PlottingWrappers.jl")
 
- result_path = "results/"
+ result_path = "results/2020-01-27/"
  figure_path = result_path*"fig/"
 
  debug = false
@@ -37,7 +37,7 @@ sample_space_dims = 50
     size_stop = 100
 
 if loading
-    dict = load("multiscale_matrix_testing_2020-01-27.jld")
+    dict = load(result_path*"multiscale_matrix_testing_2020-01-27.jld")
     geom_mat_results = dict["geom_mat_results"]
     rand_mat_results = dict["rand_mat_results"]
 else
