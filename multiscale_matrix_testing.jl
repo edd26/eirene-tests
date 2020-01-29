@@ -5,6 +5,7 @@ using JLD
 loading = true
  do_rand = true
  plotting = true
+ save_figures = true
  #
  julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
@@ -71,7 +72,7 @@ if plotting
 
 # ==============================================================================
 # ================================ Plot results ================================
-
+    file_name = "_betti_curves"
 
     plot_rand = plot(title="Average number of cycles for random matrix",
                                                                     legend=:left);
@@ -83,15 +84,13 @@ if plotting
         xlabel!("Matrix size")
 
         plot!(inset = (1, bbox(0.05,0.05,0.5,0.25,:top,:left)), subplot=1)
-        st_plt = 3
-        end_plt = Int(floor((length(repetitions))/2))+2
+        st_plt = 4
+        end_plt = Int(floor((length(repetitions))/2))
         for bet = min_B_dim:max_B_dim
             plot!(repetitions[st_plt:end_plt,1], betti_avgs_rand[st_plt:end_plt,bet],
                     ribbon=betti_stds_rand[st_plt:end_plt,bet], fillalpha=.3,
                      legend=false, subplot=2, tick_direction=:in)
         end
-
-
 
         # histogram!(randn(1000),
         #             inset = (1, bbox(0.05,0.05,0.5,0.25,:bottom,:right)), ticks=nothing, subplot=3, bg_inside=nothing)
@@ -119,6 +118,17 @@ if plotting
         end
         ylabel!("Number of cycles")
         xlabel!("Matrix size")
+
+    if save_figures
+        savefig(plot_rand, figure_path*"random"*file_name)
+        @info "Saved file as " figure_path*"random"*file_name
+
+        savefig(plot_geom, figure_path*"geom"*file_name)
+        @info "Saved file as " figure_path*"geom"*file_name
+
+        savefig(plot_all, figure_path*"all"*file_name)
+        @info "Saved file as " figure_path*"all"*file_name
+    end
 
     display(plot_rand)
     display(plot_geom)

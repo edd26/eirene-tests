@@ -3,6 +3,7 @@ using JLD
 
 loading = true
  plotting = true
+ save_figures = false
 
     julia_func_path = "../julia-functions/"
         include(julia_func_path*"GeometricSampling.jl");
@@ -78,27 +79,43 @@ if plotting
         return betti_avgs_geom[position_size,betti,position_dim]
     end
 
+    file_name = "betti_surface_"
     plotlyjs()
 
+    # ==
     betti=1
-     plot(repetitions,dims,get_surface_val,st = [:wireframe, :surface],
+    plot_betti_1 = plot(repetitions,dims,get_surface_val,st = [:wireframe, :surface],
                                             camera=(-40,20),
                                              color=:lightrainbow)
-        xlabel!("Matrix size")
-        ylabel!("Sampling space dimension")
+    xlabel!("Matrix size")
+    ylabel!("Sampling space dimension")
+    if save_figures
+        savefig(plot_betti_1, figure_path*file_name*string(betti))
+        @info "Saved file as " figure_path*file_name
+    end
 
+    # ==
     betti=2
-     plot!(repetitions,dims,get_surface_val, st = [:wireframe, :surface],
-                                            camera=(-40,20), color=:rainbow)
-        xlabel!("Matrix size")
-        ylabel!("Sampling space dimension")
+    plot_betti_2 = plot(repetitions,dims,get_surface_val, st = [:wireframe, :surface],
+                                        camera=(-40,20), color=:lightrainbow)
+    xlabel!("Matrix size")
+    ylabel!("Sampling space dimension")
+    if save_figures
+        savefig(plot_betti_2, figure_path*file_name*string(betti))
+        @info "Saved file as " figure_path*file_name
+    end
 
+    # ==
     betti=3
-     plot!(repetitions,dims,get_surface_val, st = [:wireframe, :surface],
-                                                    camera=(-40,20),
-                                                     color=:darkrainbow)
-        xlabel!("Matrix size")
-        ylabel!("Sampling space dimension")
+    plot_betti_3 = plot(repetitions,dims,get_surface_val, st = [:wireframe, :surface],
+                                                camera=(-40,20),
+                                                 color=:lightrainbow)
+    xlabel!("Matrix size")
+    ylabel!("Sampling space dimension")
+    if save_figures
+        savefig(plot_betti_3, figure_path*file_name*string(betti))
+        @info "Saved file as " figure_path*file_name
+    end
 end
 
 # ==============================================================================
