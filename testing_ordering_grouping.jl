@@ -8,7 +8,7 @@ using Eirene
     using JLD
 
  cd("../image-topology/")
-    julia_func_path = "./julia-functions/"
+    julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
     include(julia_func_path*"MatrixToolbox.jl")
     include(julia_func_path*"MatrixProcessing.jl")
@@ -31,186 +31,184 @@ result_path = "results/"
 	rank_betti_path = result_path*"rank_betti/"
     heatmaps_path = figure_path*"heatmaps/"
 
-
-     img_path = "img/"
-     simple_matrix_path = img_path*"simple_matrix/"
-     compositions = simple_matrix_path*"composition/"
-
-    save_gabor_param = false
-    plt_filters = false
-    save_filters = false
+    img_path = "img/"
+    simple_matrix_path = img_path*"simple_matrix/"
+    compositions = simple_matrix_path*"composition/"
 
     plot_heatmaps = true
     save_heatmaps = false
 
-    do_eirene =     true
     save_figures =  true
     plot_betti_figrues = true
 
-    do_local_corr = false
-    do_local_gabor = true
-    do_local_grad = false
-
-
     # Image processing parameters
-    shift =          1
     max_size_limiter =   200
-
-    patch_params = Dict("x"=>1, "y"=>1, "spread" =>1)
     sub_img_size = 31
 
+
+	function get_bettis_analysis(matrix, mat_type::String, targets::Int,
+		 									sources::Int; save_figures=false)
+		mat_size = size(matrix,1)
+		eirene_geom = eirene(matrix,maxdim=3,model="vr")
+	    bett_geom = get_bettis(eirene_geom, max_B_dim);
+
+	    plot_title1 = "$(mat_type)_trg=$(targets)_src=$(sources)_steps=$(size(bett_geom[1],1))"
+		plot_geom = plot_bettis2(bett_geom, plot_title1, legend_on=true,
+	                                min_dim=1)
+		xlabel!("Steps")
+
+	    if save_figures
+			extension = ".png"
+			file_name1 = replace(plot_title1, ","=>"_")*extension
+
+	        savefig(plot_geom, rank_betti_path*file_name1)
+	        @info "Saved file."
+	    end
+		# display(plot_geom)
+		return plot_geom
+	end
+
+
 # ==============================================================================
-# ====================== Random and geometric matrix rank ======================
+# ============================== Repeated points ===============================
+# ===
+# Generate geometric matrix
 min_B_dim = 1
 	max_B_dim = 3
 	sample_space_dim = 201
 	maxsim = 1
 	mat_size = 81
 
-# ==========================================
-# ============= Generate data ==============
-# ===
-
-rank_mat = [0, 0]
-# Generate random matrix
-symm_mat_rand = generate_random_matrix(mat_size)
-ordered_mat_rand = get_ordered_matrix(symm_mat_rand)
-rank_mat[1] = rank(ordered_mat_rand)
-
-# ===
-# Generate geometric matrix
-pts_rand = generate_random_point_cloud(sample_space_dim,mat_size)
-symm_mat_geom = generate_geometric_matrix(pts_rand')
-ordered_mat_geom = get_ordered_matrix(symm_mat_geom; assing_same_values=false)
-rank_mat[2] = rank(ordered_mat_geom)
-# ======================================================================
-# ========================= Do the Betti analysis ======================
-# ===
-# Generate bettis
-
-
-if plot_betti_figrues && do_eirene
-	eirene_geom = eirene(ordered_mat_geom,maxdim=3,model="vr")
-    bett_geom = get_bettis(eirene_geom, max_B_dim);
-
-	eirene_rand= eirene(ordered_mat_rand,maxdim=3,model="vr")
-	bett_rand = get_bettis(eirene_rand, max_B_dim);
-
-
-    plot_title1 = "geometric,mat_size=$(mat_size),"*
-                    "rank=$(rank_mat[1]),steps=$(size(bett_geom[1],1))"
-	plot_geom = plot_bettis2(bett_geom, plot_title1, legend_on=true,
-                                min_dim=1)
-	xlabel!("Steps")
-
-	plot_title2 = "random,mat_size=$(mat_size),"*
-                    "rank=$(rank_mat[2]),steps=$(size(bett_rand[1],1))"
-	plot_rand = plot_bettis2(bett_rand, plot_title2, legend_on=true,
-                                min_dim=1)
-	xlabel!("Steps")
-
-    if save_figures
-		extension = ".png"
-		file_name1 = replace(plot_title1, ","=>"_")*extension
-		file_name2 = replace(plot_title2, ","=>"_")*extension
-
-        savefig(plot_geom, rank_betti_path*file_name1)
-        savefig(plot_rand, rank_betti_path*file_name2)
-        @info "Saved files in " rank_betti_path
-    end
-end
-
-# ==============================================================================
-# ================================ Plot results ================================
-
-if plot_heatmaps
-	heat_map1 = plot_square_heatmap(ordered_mat_geom, 10,size(ordered_mat_geom,1);
-		plt_title = "Order matrix of geom. matrix, size:$(mat_size)")
-	plot!( yflip = true,)
-
-	heat_map2 = plot_square_heatmap(ordered_mat_rand, 10,size(ordered_mat_rand,1);
-		plt_title = "Order matrix of rand. matrix, size:$(mat_size)")
-	plot!( yflip = true,)
-
-    if save_heatmaps
-        heatm_details = "$(mat_size)"
-		savefig(heat_map1, rank_betti_path*"ordering_geom"*heatm_details)
-		savefig(heat_map2, rank_betti_path*"ordering_rand"*heatm_details)
-		@info "Saved files in " rank_betti_path
-    end
-end
-
-# ==============================================================================
-# ============================== Repeated points ===============================
-# ===
-# Generate geometric matrix
-number_of_targets = 25
+	# set_sources = [1, 2]
+	set_sources = [1, 2, 5, 15]
+	set_targets = [2, 5, 15, 30]
+	# set_targets = [2, 30]
 
 	pts_rand = generate_random_point_cloud(sample_space_dim,mat_size)
 	copy_pts_rand = copy(pts_rand)
 
-	source_point = rand(collect(1:size(pts_rand,1)))
-	target_points = rand(collect(1:size(pts_rand,1)), 1, number_of_targets)
 
-	for target in target_points
-		pts_rand[target,:] = pts_rand[source_point,:]
+for num_sources = set_sources, num_targets in set_targets
+
+	source_points = rand(collect(1:size(pts_rand,1)), 1, num_sources)
+	target_points = rand(collect(1:size(pts_rand,1)), 1, num_targets)
+
+	for source_point in source_points
+		for target in target_points
+			pts_rand[target,:] = copy_pts_rand[source_point,:]
+		end
 	end
 
 	symm_mat_geom_orig = generate_geometric_matrix(copy_pts_rand')
+	ordered_geom_orig = get_ordered_matrix(symm_mat_geom_orig; assing_same_values=false)
 	ordered_geom_gr_orig = get_ordered_matrix(symm_mat_geom_orig; assing_same_values=true)
 
 	symm_mat_geom = generate_geometric_matrix(pts_rand')
 	ordered_geom = get_ordered_matrix(symm_mat_geom; assing_same_values=false)
 	ordered_geom_gr = get_ordered_matrix(symm_mat_geom; assing_same_values=true)
 
-	rank_mat[2] = rank(ordered_geom)
-	rank_mat[2] = rank(ordered_geom_gr)
 
+	if plot_heatmaps
+		heat_map_orig = plot_square_heatmap(ordered_geom_gr_orig, 10,size(ordered_geom,1);
+			plt_title = "Ordered original matrix")
+		plot!( yflip = true,)
 
-if plot_heatmaps
-	heat_map_orig = plot_square_heatmap(ordered_geom_gr_orig, 10,size(ordered_geom,1);
-		plt_title = "Ordered original matrix, size:$(mat_size)")
-	plot!( yflip = true,)
+		heat_map_ord = plot_square_heatmap(ordered_geom, 10,size(ordered_geom,1);
+			plt_title = "Ordered matrix, no grouping, trgt:$(num_targets), src:$(num_sources)")
+		plot!( yflip = true,)
 
-	heat_map_ord = plot_square_heatmap(ordered_geom, 10,size(ordered_geom,1);
-		plt_title = "Ordered matrix, no grouping, size:$(mat_size)")
-	plot!( yflip = true,)
+		heat_map_ord_gr = plot_square_heatmap(ordered_geom_gr, 10,size(ordered_geom_gr,1);
+			plt_title = "Ordered matrix matrix, grouping, trgt:$(num_targets), src:$(num_sources)")
+		plot!( yflip = true,)
 
-	heat_map_ord_gr = plot_square_heatmap(ordered_geom_gr, 10,size(ordered_geom_gr,1);
-		plt_title = "Ordered matrix matrix, grouping, size:$(mat_size)")
-	plot!( yflip = true,)
+		plt_hall = plot(heat_map_orig, heat_map_ord, heat_map_ord_gr,layout = 3);
 
-    if save_heatmaps
-        heatm_details = "$(mat_size)"
-		savefig(heat_map1, rank_betti_path*"ordering_geom"*heatm_details)
-		savefig(heat_map2, rank_betti_path*"ordering_rand"*heatm_details)
-		@info "Saved files in " rank_betti_path
-    end
-	display(heat_map_orig)
-	display(heat_map_ord)
-	display(heat_map_ord_gr)
+	    if save_heatmaps
+	        heatm_details = "$(mat_size)"
+			savefig(heat_map1, rank_betti_path*"ordering_geom"*heatm_details)
+			savefig(heat_map2, rank_betti_path*"ordering_rand"*heatm_details)
+			@info "Saved files in " rank_betti_path
+	    end
+		# display(heat_map_orig)
+		# display(heat_map_ord)
+		# display(heat_map_ord_gr)
+		display(plt_hall)
+	end
+
+	plt0 = get_bettis_analysis(ordered_geom_orig, "orig", num_targets, num_sources);
+	plt1 = get_bettis_analysis(ordered_geom_gr_orig, "gr_orig", num_targets, num_sources);
+	plt2 = get_bettis_analysis(ordered_geom, "no_gr", num_targets, num_sources);
+	plt3 = get_bettis_analysis(ordered_geom_gr, "gr", num_targets, num_sources);
+
+	plot(title="Comparison, target_points = $(num_targets), sources = $(num_sources)");
+	plt_oall = plot(plt0, plt1, plt2, plt3, layout = 4);
+
+	display(plt_oall)
 end
 
+# Observations:
+# some of those ordering matrices are simillar to those obtained from images
+# the betti curves are not simillar to those from images- they are shifted and
+# not as low as for images
 
-function get_bettis_analysis(matrix, mat_type::String; save_figures=false)
-	mat_size = size(matrix,1)
-	eirene_geom = eirene(ordered_mat_geom,maxdim=3,model="vr")
-    bett_geom = get_bettis(eirene_geom, max_B_dim);
 
-    plot_title1 = "$(mat_type)_size=$(mat_size)_steps=$(size(bett_geom[1],1))"
-	plot_geom = plot_bettis2(bett_geom, plot_title1, legend_on=true,
-                                min_dim=1)
-	xlabel!("Steps")
+# ===============================================
+# ======= sequential adding of random points
 
-    if save_figures
-		extension = ".png"
-		file_name1 = replace(plot_title1, ","=>"_")*extension
+set_sources = [1, 2, 5, 15]
+set_targets = [2, 5, 15, 30]
 
-        savefig(plot_geom, rank_betti_path*file_name1)
-        @info "Saved file."
-    end
-end
+num_sources = set_sources[1]
 
-get_bettis_analysis(ordered_geom_gr_orig, "ordered_geom_gr_orig")
-get_bettis_analysis(ordered_geom, "ordered_geom")
-get_bettis_analysis(ordered_geom_gr, "ordered_geom_gr")
+num_targets = 50
+target_sets = 10
+target_batches = Int(ceil(num_targets/target_sets))
+
+pts_rand = generate_random_point_cloud(sample_space_dim,mat_size)
+copy_pts_rand = copy(pts_rand)
+
+source_points = rand(collect(1:size(pts_rand,1)), 1, num_sources)
+target_points = rand(collect(1:size(pts_rand,1)), target_batches, target_sets)
+source_point = source_points[1]
+
+
+set_of_plots = Any[]
+ pts_rand = copy(copy_pts_rand)
+ set_of_h_maps = Any[]
+ for row = 1:target_batches
+
+	for a_point in target_points[row, :]
+		pts_rand[a_point,:] = copy_pts_rand[source_point,:]
+	end
+   # symm_mat_geom_orig = generate_geometric_matrix(copy_pts_rand')
+   # ordered_geom_orig = get_ordered_matrix(symm_mat_geom_orig; assing_same_values=false)
+   # ordered_geom_gr_orig = get_ordered_matrix(symm_mat_geom_orig; assing_same_values=true)
+
+   symm_mat_geom = generate_geometric_matrix(pts_rand')
+   # ordered_geom = get_ordered_matrix(symm_mat_geom; assing_same_values=false)
+   ordered_geom_gr = get_ordered_matrix(symm_mat_geom; assing_same_values=true)
+
+
+   heat_map_ord_gr = plot_square_heatmap(ordered_geom_gr, 10,size(ordered_geom_gr,1);
+	   plt_title = "Ordered matrix matrix, grouping, trgt:$(num_targets), src:$(num_sources)")
+   plot!( yflip = true, legend=:none)
+
+   # plt0 = get_bettis_analysis(ordered_geom_orig, "orig", num_targets, num_sources);
+   # plt1 = get_bettis_analysis(ordered_geom_gr_orig, "gr_orig", num_targets, num_sources);
+   # plt2 = get_bettis_analysis(ordered_geom, "no_gr", num_targets, num_sources);
+
+   plt3 = get_bettis_analysis(ordered_geom_gr, "gr", row, num_sources);
+   plot!(legend=false, title=false)
+
+   push!(set_of_plots, plt3)
+   push!(set_of_h_maps, heat_map_ord_gr)
+ end
+
+
+plt_all = plot(set_of_plots[1], set_of_plots[2],
+				set_of_plots[3], set_of_plots[4],
+				set_of_plots[5], layout=(5))
+
+plt_allh = plot(set_of_h_maps[1], set_of_h_maps[2],
+				set_of_h_maps[3], set_of_h_maps[4],
+				set_of_h_maps[5],layout=(5))
