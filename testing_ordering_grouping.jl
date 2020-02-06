@@ -1,13 +1,13 @@
-using Eirene
- 	using DelimitedFiles
- 	using Plots
-    using LinearAlgebra
-    using Images
-    using Distances
-    using Images
-    using JLD
+using DelimitedFiles
+	using Plots
+	using LinearAlgebra
+	using Images
+	using Distances
+	using Images
+	using JLD
+	using Eirene
 
- cd("../image-topology/")
+ cd("Programowanie/Julia/eirene-tests/")
     julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
     include(julia_func_path*"MatrixToolbox.jl")
@@ -212,3 +212,6 @@ plt_all = plot(set_of_plots[1], set_of_plots[2],
 plt_allh = plot(set_of_h_maps[1], set_of_h_maps[2],
 				set_of_h_maps[3], set_of_h_maps[4],
 				set_of_h_maps[5],layout=(5))
+
+
+# TODO Add copying points from the end toward start
