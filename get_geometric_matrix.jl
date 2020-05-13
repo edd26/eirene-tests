@@ -1,10 +1,9 @@
-
-
 using Eirene
  using DelimitedFiles
  using Distances
  using LinearAlgebra
  using Statistics
+ using Plots
  # cd("/home/ed19aaf/Programming/Julia/olfaction")
  cd("../eirene-tests")
     julia_func_path = "../julia-functions/"
@@ -30,10 +29,10 @@ ord_mat_geom = get_ordered_matrix(geom_mat)
    # random_plot = get_and_plot_bettis(C,max_dim=max_B_dim,legend_on=true)
 
 # ===
-bettis = get_bettis(C, max_B_dim)
-   norm_bettis = normalise_bettis(bettis)
+bettis_geom = get_bettis(C, max_B_dim)
+   norm_bettis_geom = normalise_bettis(bettis_geom)
    # =
-   max_dim = size(bettis,1)
+   max_dim = size(bettis_geom,1)
    all_dims = min_dim:max_dim
 
    # set_default_plotting_params()
@@ -49,10 +48,10 @@ bettis = get_bettis(C, max_B_dim)
    end
 
    # final_title = "Eirene betti curves, "*plot_title
-   plot_ref = plot(title=plot_title)
+   plot_ref_geom = plot(title=plot_title)
    for p = 1:(max_dim)
       # @info p
-        plot!(bettis[p][:,1], bettis[p][:,2], label="a",
+        plot!(bettis_geom[p][:,1], bettis_geom[p][:,2], label="a",
                                        # label="\\beta_$(all_dims[p])",
                                        lc=colors_set[p],
                                        linewidth = 2,);
@@ -65,7 +64,7 @@ bettis = get_bettis(C, max_B_dim)
    # plot!(random_plot, legend=true)
    title!("geometric matrix, $(matrix_size) by $(matrix_size)")
 
-   savefig(plot_ref, "results/geometric_matrix_samlpes$(matrix_size)")
+   # savefig(plot_ref_geom, "results/geometric_matrix_samlpes$(matrix_size).pdf")
 
 # === === === === === === === === === === === === ===
 # get heatmap
@@ -81,13 +80,18 @@ plot_params= (dpi=300,
                   )
 color_palete=:lightrainbow
 add_labels=true
-heat_map = heatmap(ord_mat_geom,  color=color_palete,
+heat_map_geom = heatmap(ord_mat_geom,  color=color_palete,
                   title="",
                   size=plot_params.size, dpi=plot_params.dpi,
                   ticks=0:5:64);
-plot!( yflip = true,);
+plot!( yflip = true,);|
 
 xlabel!("Matrix index")
 ylabel!("Matrix index")
 
-savefig(heat_map, "results/geometric_matrix_heatmap$(matrix_size)")
+# savefig(heat_map_geom, "results/geometric_matrix_heatmap$(matrix_size).pdf")
+
+plot!(plot_ref_geom, title = "");
+plot!(heat_map_geom, title = "");
+common_plot = plot(heat_map_geom, plot_ref_geom, layout=(1,2), size=(800,400))
+savefig(common_plot, "results/geometric_matrix_both_$(matrix_size).pdf")

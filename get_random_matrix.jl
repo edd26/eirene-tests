@@ -63,7 +63,7 @@ bettis = get_bettis(C, max_B_dim)
    # plot!(random_plot, legend=true)
    title!("random matrix, $(matrix_size) by $(matrix_size)")
 
-   savefig(plot_ref, "results/random_matrix_samlpes$(matrix_size)")
+   savefig(plot_ref, "results/random_matrix_samlpes$(matrix_size).pdf")
 
 # === === === === === === === === === === === === ===
 # get heatmap
@@ -88,4 +88,9 @@ plot!( yflip = true,);
 xlabel!("Matrix index")
 ylabel!("Matrix index")
 
-savefig(heat_map, "results/random_matrix_heatmap$(matrix_size)")
+
+
+plot!(plot_ref, title = "");
+plot!(heat_map, title = "");
+common_plot = plot(heat_map, plot_ref, layout=(1,2), size=(800,400))
+savefig(common_plot, "results/random_matrix_both_$(matrix_size).pdf")
