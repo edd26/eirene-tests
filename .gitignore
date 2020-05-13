@@ -4,3 +4,6 @@
 deps/deps.jl
 results/dim_comparison
 results/rand_geom_dim50
+*.DS_Store
+
+*.png
