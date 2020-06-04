@@ -2,9 +2,6 @@ using Plots
 # using DelimitedFiles
 using JLD
 
-loading = false
- do_rand = true
- plotting = false
  #
  julia_func_path = "../julia-functions/"
     include(julia_func_path*"GeometricSampling.jl");
@@ -25,6 +22,10 @@ loading = false
  end
 
  cd("../eirene-tests")
+
+ loading = true
+  do_rand = true
+  plotting = true
 
 # ==============================================
 # ============= matrix parameters ==============
@@ -52,13 +53,18 @@ end
 if plotting
     repetitions = size_start:size_step:size_stop
     num_of_bettis = length(collect(min_B_dim:max_B_dim))
+    if loading
+        total_reps = length(rand_mat_results)
+    else
+        total_reps = length(repetitions)
+    end
 
-    betti_avgs_rand = zeros(length(repetitions), num_of_bettis)
-    betti_stds_rand = zeros(length(repetitions), num_of_bettis)
-    betti_avgs_geom = zeros(length(repetitions), num_of_bettis)
-    betti_stds_geom = zeros(length(repetitions), num_of_bettis)
+    betti_avgs_rand = zeros(total_reps, num_of_bettis)
+    betti_stds_rand = zeros(total_reps, num_of_bettis)
+    betti_avgs_geom = zeros(total_reps, num_of_bettis)
+    betti_stds_geom = zeros(total_reps, num_of_bettis)
 
-    for k in 1:length(repetitions)
+    for k in 1:total_reps
         if do_rand
             betti_avgs_rand[k,:] = rand_mat_results[k]["avg_cycles"]
             betti_stds_rand[k,:] = rand_mat_results[k]["std_cycles"]
