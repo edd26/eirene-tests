@@ -6,4 +6,10 @@ results/dim_comparison
 results/rand_geom_dim50
 *.DS_Store
 
+
+# Results
 *.png
+*.pdf
+
+# Data files
+*.jld
